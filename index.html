@@ -1,0 +1,667 @@
+<!DOCTYPE html>
+<html lang="pt-BR">
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+  <title>SinaisPRO | BETVIP</title>
+  <script src="https://cdn.jsdelivr.net/npm/chart.js"></script>
+  <style>
+    :root{
+      --bg:#0a0a0f;
+      --card:#12121a;
+      --card2:#1a1a26;
+      --border:#1f1f2c;
+      --text:#f1f5f9;
+      --muted:#94a3b8;
+      --accent:#7c3aed;
+      --accent2:#a855f7;
+      --green:#22c55e;
+      --yellow:#eab308;
+      --red:#ef4444;
+    }
+    *{box-sizing:border-box;margin:0;padding:0}
+    body{font-family:Inter,system-ui,sans-serif;background:var(--bg);color:var(--text);min-height:100vh}
+
+    header{
+      position:sticky;top:0;z-index:50;
+      background:rgba(10,10,15,.92);
+      backdrop-filter:blur(12px);
+      border-bottom:1px solid var(--border);
+    }
+    .header-inner{
+      max-width:1200px;margin:0 auto;padding:14px 20px;
+      display:flex;align-items:center;justify-content:space-between;gap:12px;flex-wrap:wrap;
+    }
+    .logo{
+      font-weight:900;font-size:1.2rem;
+      background:linear-gradient(90deg,#fff,#a855f7,#7c3aed);
+      -webkit-background-clip:text;-webkit-text-fill-color:transparent;
+      display:flex;align-items:center;gap:10px;
+    }
+    .header-right{display:flex;align-items:center;gap:10px;flex-wrap:wrap}
+    .badge{
+      display:flex;align-items:center;gap:7px;
+      border-radius:999px;padding:6px 13px;
+      font-size:.75rem;font-weight:800;
+      border:1px solid var(--border);background:var(--card);color:var(--muted);
+    }
+    .live-dot{
+      width:8px;height:8px;border-radius:50%;
+      background:var(--red);animation:pulse 1s infinite;
+    }
+    @keyframes pulse{0%,100%{transform:scale(1);opacity:1}50%{transform:scale(1.4);opacity:.5}}
+
+    .hero{
+      padding:40px 20px 28px;
+      background:linear-gradient(135deg,#0f0f1a 0%,#1a0a2e 50%,#0a1628 100%);
+      border-bottom:1px solid var(--border);
+      text-align:center;position:relative;overflow:hidden;
+    }
+    .hero::before{
+      content:'';position:absolute;
+      width:600px;height:600px;
+      background:radial-gradient(circle,rgba(124,58,237,.1),transparent 70%);
+      top:-150px;left:50%;transform:translateX(-50%);pointer-events:none;
+    }
+    .hero h1{
+      font-size:clamp(1.9rem,5vw,3.2rem);
+      line-height:1.05;margin-bottom:12px;
+      background:linear-gradient(90deg,#fff 30%,#a855f7,#7c3aed);
+      -webkit-background-clip:text;-webkit-text-fill-color:transparent;
+      position:relative;
+    }
+    .hero p{
+      max-width:580px;margin:0 auto 22px;
+      color:var(--muted);font-size:.98rem;line-height:1.6;position:relative;
+    }
+    .hero-stats{
+      display:flex;justify-content:center;gap:16px;flex-wrap:wrap;position:relative;
+    }
+    .stat{
+      min-width:140px;padding:14px 18px;
+      border:1px solid var(--border);
+      background:rgba(18,18,26,.8);border-radius:16px;
+    }
+    .stat-value{font-size:1.6rem;font-weight:900;color:var(--accent2)}
+    .stat-label{font-size:.7rem;text-transform:uppercase;letter-spacing:.08em;color:var(--muted);margin-top:4px}
+
+    .ticker{max-width:1200px;margin:14px auto 0;padding:0 20px}
+    .ticker-box{
+      overflow:hidden;border:1px solid var(--border);
+      border-radius:14px;background:var(--card);
+    }
+    .ticker-track{
+      display:flex;gap:36px;white-space:nowrap;
+      padding:11px 18px;animation:tick 30s linear infinite;
+    }
+    @keyframes tick{from{transform:translateX(0)}to{transform:translateX(-50%)}}
+    .ticker-item{font-size:.78rem;font-weight:700;color:var(--muted)}
+    .ticker-item strong{color:var(--text)}
+    .ticker-item.up strong{color:var(--green)}
+    .ticker-item.dn strong{color:var(--red)}
+
+    .section{max-width:1200px;margin:22px auto 0;padding:0 20px}
+    .section-head{
+      display:flex;align-items:flex-end;justify-content:space-between;
+      gap:12px;flex-wrap:wrap;margin-bottom:14px;
+    }
+    .section-title{font-size:.9rem;font-weight:900;letter-spacing:.08em;text-transform:uppercase;color:var(--muted)}
+    .section-sub{font-size:.78rem;color:var(--muted);margin-top:4px}
+
+    .filters{display:flex;gap:8px;flex-wrap:wrap}
+    .filter-btn{
+      border:1px solid var(--border);background:var(--card);color:var(--muted);
+      padding:8px 14px;border-radius:999px;cursor:pointer;font-weight:700;font-size:.82rem;
+      transition:all .2s;
+    }
+    .filter-btn:hover{border-color:var(--accent);color:var(--accent2)}
+    .filter-btn.active{background:var(--accent);color:#fff;border-color:var(--accent)}
+
+    .ranking-grid{display:grid;grid-template-columns:repeat(3,1fr);gap:12px}
+    .ranking-card{
+      background:linear-gradient(180deg,#14141d,#101018);
+      border:1px solid var(--border);border-radius:16px;
+      padding:16px;display:flex;align-items:center;gap:12px;
+      transition:transform .2s,border-color .2s;
+    }
+    .ranking-card:hover{transform:translateY(-3px);border-color:rgba(124,58,237,.35)}
+    .rank-pos{
+      width:42px;height:42px;border-radius:12px;
+      display:flex;align-items:center;justify-content:center;
+      font-weight:900;font-size:1.1rem;color:#fff;flex-shrink:0;
+    }
+    .rank-1{background:linear-gradient(135deg,#f59e0b,#f97316)}
+    .rank-2{background:linear-gradient(135deg,#64748b,#94a3b8)}
+    .rank-3{background:linear-gradient(135deg,#7c3aed,#a855f7)}
+    .rank-info{flex:1;min-width:0}
+    .rank-name{font-size:.92rem;font-weight:800;white-space:nowrap;overflow:hidden;text-overflow:ellipsis}
+    .rank-provider{font-size:.7rem;color:var(--muted);margin-top:2px}
+    .rank-score{font-weight:900;font-size:1.05rem;min-width:58px;text-align:right}
+    .score-high{color:var(--green)}
+    .score-mid{color:var(--yellow)}
+    .score-low{color:var(--red)}
+    .rank-enter{animation:rankIn .5s ease}
+    @keyframes rankIn{from{opacity:0;transform:translateY(8px)}to{opacity:1;transform:none}}
+
+    .sort-line{
+      display:flex;align-items:center;justify-content:space-between;
+      gap:12px;flex-wrap:wrap;margin:10px 0 14px;
+    }
+    select{
+      background:var(--card);color:var(--text);border:1px solid var(--border);
+      border-radius:10px;padding:8px 12px;font-family:inherit;font-size:.82rem;cursor:pointer;
+    }
+
+    .grid{display:grid;grid-template-columns:repeat(auto-fill,minmax(310px,1fr));gap:16px}
+    .card{
+      position:relative;background:var(--card);
+      border:1px solid var(--border);border-radius:18px;overflow:hidden;
+      transition:transform .22s,box-shadow .22s,border-color .22s;
+    }
+    .card:hover{
+      transform:translateY(-5px);
+      border-color:rgba(124,58,237,.38);
+      box-shadow:0 18px 44px rgba(124,58,237,.15);
+    }
+    .card.top-glow{border-color:rgba(34,197,94,.45);box-shadow:0 0 22px rgba(34,197,94,.1)}
+    .corner{
+      position:absolute;top:12px;right:12px;z-index:2;
+      font-size:.62rem;font-weight:900;letter-spacing:.08em;text-transform:uppercase;
+      padding:4px 9px;border-radius:8px;color:#fff;
+    }
+    .corner.hot{background:linear-gradient(135deg,#dc2626,#f97316)}
+    .corner.top{background:linear-gradient(135deg,#15803d,#22c55e)}
+    .corner.new{background:linear-gradient(135deg,#1d4ed8,#3b82f6)}
+
+    .card-head{display:flex;align-items:center;gap:12px;padding:16px 16px 10px}
+    .thumb{
+      width:54px;height:54px;border-radius:14px;
+      display:flex;align-items:center;justify-content:center;
+      background:var(--card2);border:1px solid var(--border);
+      font-size:1.65rem;flex-shrink:0;
+    }
+    .info{flex:1;min-width:0}
+    .name{font-weight:800;font-size:.95rem;white-space:nowrap;overflow:hidden;text-overflow:ellipsis}
+    .provider{font-size:.72rem;color:var(--muted);margin-top:3px}
+    .sig{min-width:68px;text-align:right;font-weight:900;font-size:1.25rem;transition:color .35s}
+    .high{color:var(--green)}.mid{color:var(--yellow)}.low{color:var(--red)}
+
+    .chart-wrap{height:82px;padding:0 14px}
+    .metrics{
+      display:flex;border-top:1px solid var(--border);border-bottom:1px solid var(--border);
+      margin:8px 0 0;padding:10px 16px;
+    }
+    .metric{flex:1;text-align:center}
+    .metric-val{font-size:.88rem;font-weight:800}
+    .metric-label{font-size:.62rem;color:var(--muted);text-transform:uppercase;letter-spacing:.05em;margin-top:2px}
+
+    .progress-wrap{padding:10px 16px 6px}
+    .progress-label{
+      display:flex;justify-content:space-between;
+      font-size:.7rem;color:var(--muted);margin-bottom:6px;
+    }
+    .bar{height:7px;background:var(--card2);border-radius:999px;overflow:hidden}
+    .fill{height:100%;border-radius:999px;transition:width 1s ease,background .4s}
+    .fill.g{background:linear-gradient(90deg,#16a34a,#22c55e)}
+    .fill.y{background:linear-gradient(90deg,#ca8a04,#eab308)}
+    .fill.r{background:linear-gradient(90deg,#b91c1c,#ef4444)}
+
+    .status-row{
+      display:flex;align-items:center;justify-content:space-between;
+      padding:8px 16px 12px;
+    }
+    .chip{display:flex;align-items:center;gap:6px;font-size:.72rem;font-weight:800}
+    .dot{width:7px;height:7px;border-radius:50%;animation:pulse 1.8s infinite}
+    .dg{background:var(--green)}.dy{background:var(--yellow)}.dr{background:var(--red)}
+    .upd{font-size:.66rem;color:var(--muted)}
+
+    .cta-wrap{padding:0 16px 16px}
+    .cta{
+      display:flex;align-items:center;justify-content:center;gap:8px;
+      width:100%;padding:13px 14px;border:none;border-radius:12px;
+      text-decoration:none;color:#fff;font-weight:900;font-size:.9rem;cursor:pointer;
+      background:linear-gradient(135deg,#7c3aed,#a855f7);
+      transition:transform .15s,opacity .2s;letter-spacing:.02em;
+    }
+    .cta:hover{opacity:.9;transform:scale(1.015)}
+    .cta.hot{background:linear-gradient(135deg,#dc2626,#f97316);animation:glow-o 2.2s infinite}
+    .cta.top{background:linear-gradient(135deg,#15803d,#22c55e);animation:glow-g 2.2s infinite}
+    @keyframes glow-o{0%,100%{box-shadow:0 0 8px rgba(249,115,22,.2)}50%{box-shadow:0 0 22px rgba(249,115,22,.55)}}
+    @keyframes glow-g{0%,100%{box-shadow:0 0 8px rgba(34,197,94,.2)}50%{box-shadow:0 0 22px rgba(34,197,94,.55)}}
+
+    .flash-card{animation:flashCard .6s ease}
+    @keyframes flashCard{0%{background-color:rgba(124,58,237,.18)}100%{background-color:transparent}}
+
+    #notif{
+      position:fixed;left:22px;bottom:22px;z-index:80;
+      background:#16101f;border:1px solid var(--accent);border-radius:14px;
+      padding:14px 18px;display:flex;gap:12px;align-items:center;
+      max-width:320px;
+      box-shadow:0 12px 32px rgba(124,58,237,.25);
+      transform:translateX(-420px);
+      transition:transform .45s cubic-bezier(.34,1.56,.64,1);
+    }
+    #notif.show{transform:translateX(0)}
+    .notif-icon{font-size:1.65rem}
+    .notif-title{font-size:.84rem;font-weight:900}
+    .notif-sub{font-size:.72rem;color:var(--muted);margin-top:3px}
+
+    footer{
+      max-width:1200px;margin:30px auto 0;
+      padding:24px 20px 40px;
+      color:var(--muted);font-size:.74rem;
+      line-height:1.8;text-align:center;
+      border-top:1px solid var(--border);
+    }
+
+    @media(max-width:900px){.ranking-grid{grid-template-columns:1fr}}
+    @media(max-width:560px){.grid{grid-template-columns:1fr}.hero-stats{gap:10px}.stat{min-width:unset;flex:1 1 120px}}
+  </style>
+</head>
+<body>
+
+<!-- HEADER -->
+<header>
+  <div class="header-inner">
+    <div class="logo">⚡ SinaisPRO</div>
+    <div class="header-right">
+      <div class="badge">🔄 Próxima atualização: <strong id="cd">30</strong>s</div>
+      <div class="badge"><div class="live-dot"></div>Ao Vivo</div>
+    </div>
+  </div>
+</header>
+
+<!-- HERO -->
+<section class="hero">
+  <h1>⚡ Sinais de Slots em Tempo Real</h1>
+  <p>Monitoramento contínuo de RTP. Os melhores jogos com sinal alto são destacados automaticamente a cada atualização.</p>
+  <div class="hero-stats">
+    <div class="stat">
+      <div class="stat-value" id="s-games">24</div>
+      <div class="stat-label">Jogos Monitorados</div>
+    </div>
+    <div class="stat">
+      <div class="stat-value" id="s-online">1.247</div>
+      <div class="stat-label">Usuários Online</div>
+    </div>
+    <div class="stat">
+      <div class="stat-value" id="s-top">—</div>
+      <div class="stat-label">Maior RTP Agora</div>
+    </div>
+    <div class="stat">
+      <div class="stat-value" id="s-strong">0</div>
+      <div class="stat-label">Sinais Fortes</div>
+    </div>
+  </div>
+</section>
+
+<!-- TICKER -->
+<div class="ticker">
+  <div class="ticker-box">
+    <div class="ticker-track" id="ticker"></div>
+  </div>
+</div>
+
+<!-- RANKING -->
+<section class="section">
+  <div class="section-head">
+    <div>
+      <div class="section-title">🏆 Ranking do Momento</div>
+      <div class="section-sub">Top 3 alternando automaticamente a cada 7 segundos</div>
+    </div>
+    <div class="filters">
+      <button class="filter-btn active" onclick="doFilter('all',this)">🎰 Todos</button>
+      <button class="filter-btn" onclick="doFilter('PGsoft',this)">PGsoft</button>
+      <button class="filter-btn" onclick="doFilter('Pragmatic',this)">Pragmatic</button>
+      <button class="filter-btn" onclick="doFilter('PopOk',this)">PopOk</button>
+      <button class="filter-btn" onclick="doFilter('Hacksaw',this)">Hacksaw</button>
+      <button class="filter-btn" onclick="doFilter('hot',this)">🔥 Quentes</button>
+      <button class="filter-btn" onclick="doFilter('top',this)">🏆 Top Sinais</button>
+    </div>
+  </div>
+  <div class="ranking-grid" id="ranking"></div>
+</section>
+
+<!-- GRID -->
+<section class="section">
+  <div class="sort-line">
+    <div>
+      <div class="section-title">📡 Monitoramento ao Vivo</div>
+      <div class="section-sub">Gráficos e sinais atualizados em tempo real</div>
+    </div>
+    <select onchange="doSort(this.value)">
+      <option value="rtp-desc">Maior RTP primeiro</option>
+      <option value="rtp-asc">Menor RTP primeiro</option>
+      <option value="name">Nome A-Z</option>
+      <option value="provider">Provedor</option>
+    </select>
+  </div>
+  <div class="grid" id="grid"></div>
+</section>
+
+<!-- NOTIFICAÇÃO -->
+<div id="notif">
+  <div class="notif-icon">🔔</div>
+  <div>
+    <div class="notif-title" id="n-title">Sinal detectado!</div>
+    <div class="notif-sub" id="n-sub">—</div>
+  </div>
+</div>
+
+<footer>
+  ⚡ SinaisPRO • Parceiro oficial <strong>BETVIP</strong> •
+  Jogue com responsabilidade • +18
+</footer>
+
+<script>
+const LINK = "https://betvip.bet.br?ref=77690ca1cb38";
+const INTERVAL = 30;
+
+const games = [
+  {id:1, name:"Fortune Tiger",       provider:"PGsoft",    icon:"🐯", hot:true,  isNew:false},
+  {id:2, name:"Fortune Ox",          provider:"PGsoft",    icon:"🐂", hot:false, isNew:false},
+  {id:3, name:"Fortune Mouse",       provider:"PGsoft",    icon:"🐭", hot:true,  isNew:false},
+  {id:4, name:"Fortune Rabbit",      provider:"PGsoft",    icon:"🐰", hot:false, isNew:true },
+  {id:5, name:"Mahjong Ways",        provider:"PGsoft",    icon:"🀄", hot:true,  isNew:false},
+  {id:6, name:"Wild Bandito",        provider:"PGsoft",    icon:"🤠", hot:false, isNew:false},
+  {id:7, name:"Ganesha Gold",        provider:"PGsoft",    icon:"🐘", hot:false, isNew:false},
+  {id:8, name:"Fruit Party",         provider:"Pragmatic", icon:"🍉", hot:true,  isNew:false},
+  {id:9, name:"Gates of Olympus",    provider:"Pragmatic", icon:"⚡", hot:true,  isNew:false},
+  {id:10,name:"Sweet Bonanza",       provider:"Pragmatic", icon:"🍭", hot:true,  isNew:false},
+  {id:11,name:"The Dog House",       provider:"Pragmatic", icon:"🐶", hot:false, isNew:false},
+  {id:12,name:"Big Bass Bonanza",    provider:"Pragmatic", icon:"🎣", hot:false, isNew:false},
+  {id:13,name:"Starlight Princess",  provider:"Pragmatic", icon:"⭐", hot:true,  isNew:false},
+  {id:14,name:"Sugar Rush",          provider:"Pragmatic", icon:"🍬", hot:false, isNew:true },
+  {id:15,name:"Joker's Jewels",      provider:"Pragmatic", icon:"🃏", hot:false, isNew:false},
+  {id:16,name:"Candy Clash",         provider:"PopOk",     icon:"🍡", hot:false, isNew:false},
+  {id:17,name:"Book of Sun",         provider:"PopOk",     icon:"☀️", hot:false, isNew:false},
+  {id:18,name:"Golden Fish Tank",    provider:"PopOk",     icon:"🐟", hot:true,  isNew:false},
+  {id:19,name:"Wanted Dead or Wild", provider:"Hacksaw",   icon:"🤠", hot:false, isNew:false},
+  {id:20,name:"Stick'em",            provider:"Hacksaw",   icon:"🍯", hot:false, isNew:false},
+  {id:21,name:"Chaos Crew",          provider:"Hacksaw",   icon:"💥", hot:true,  isNew:false},
+  {id:22,name:"Highrise",            provider:"Hacksaw",   icon:"🏙️", hot:false, isNew:true },
+  {id:23,name:"Coin Strike",         provider:"PGsoft",    icon:"🪙", hot:false, isNew:false},
+  {id:24,name:"Dragon Hatch",        provider:"PGsoft",    icon:"🐉", hot:true,  isNew:false},
+];
+
+const state = {}, charts = {};
+let filter = 'all', sort = 'rtp-desc', cd = INTERVAL, rankRot = 0, nIdx = 0;
+
+function initScore(g){ return g.hot ? rnd(91,98.5) : rnd(74,91) }
+function genHist(g){
+  const a=[]; let v=g.hot?88:74;
+  for(let i=0;i<14;i++){ v+=((Math.random()-.43)*5); v=clamp(v,62,99.5); a.push(+v.toFixed(1)); }
+  return a;
+}
+games.forEach(g=>{ state[g.id]={score:initScore(g),hist:genHist(g),upd:new Date(),trend:0}; });
+
+function rnd(a,b){ return +(Math.random()*(b-a)+a).toFixed(1) }
+function clamp(v,a,b){ return Math.min(b,Math.max(a,v)) }
+function sCls(v){ return v>=90?'high':v>=80?'mid':'low' }
+function fCls(v){ return v>=90?'g':v>=80?'y':'r' }
+function dCls(v){ return v>=90?'dg':v>=80?'dy':'dr' }
+function sLbl(v){ return v>=90?'Sinal Forte':v>=80?'Sinal Médio':'Sinal Fraco' }
+function sColor(v){ return v>=90?'var(--green)':v>=80?'var(--yellow)':'var(--red)' }
+function pal(v){ return v>=90?{l:'#22c55e',f:'rgba(34,197,94,.14)'}:v>=80?{l:'#eab308',f:'rgba(234,179,8,.14)'}:{l:'#ef4444',f:'rgba(239,68,68,.14)'} }
+function fmtT(d){ return d.toLocaleTimeString('pt-BR') }
+function sorted(){ return [...games].sort((a,b)=>{
+  if(sort==='rtp-desc') return state[b.id].score-state[a.id].score;
+  if(sort==='rtp-asc')  return state[a.id].score-state[b.id].score;
+  if(sort==='name')     return a.name.localeCompare(b.name);
+  return a.provider.localeCompare(b.provider);
+})}
+
+/* ── TICKER ─────────────────────────────── */
+function buildTicker(){
+  const el=document.getElementById('ticker');
+  const items=games.map(g=>{
+    const s=state[g.id]; const u=s.trend>=0;
+    return `<div class="ticker-item ${u?'up':'dn'}">${g.icon} <strong>${g.name}</strong> ${u?'▲':'▼'} ${s.score}%</div>`;
+  });
+  el.innerHTML=[...items,...items].join('');
+}
+
+/* ── RANKING ─────────────────────────────── */
+function buildRanking(){
+  const el=document.getElementById('ranking');
+  const top3=sorted().slice(0,3);
+  const rot=[top3[rankRot%3],top3[(rankRot+1)%3],top3[(rankRot+2)%3]];
+  el.innerHTML=rot.map((g,i)=>{
+    const v=state[g.id].score;
+    return `
+      <div class="ranking-card rank-enter">
+        <div class="rank-pos rank-${i+1}">${i+1}</div>
+        <div class="rank-info">
+          <div class="rank-name">${g.icon} ${g.name}</div>
+          <div class="rank-provider">${g.provider}</div>
+        </div>
+        <div class="rank-score score-${sCls(v)}">${v}%</div>
+      </div>`;
+  }).join('');
+}
+
+/* ── CARDS ───────────────────────────────── */
+function renderCards(){
+  const grid=document.getElementById('grid');
+  grid.innerHTML='';
+  sorted().forEach(g=>{
+    const s=state[g.id]; const top=s.score>=93;
+    const badge=top?'top':g.hot?'hot':g.isNew?'new':'';
+    const btnCls='cta'+(top?' top':g.hot?' hot':'');
+    const card=document.createElement('div');
+    card.className='card'+(top?' top-glow':'');
+    card.dataset.provider=g.provider;
+    card.dataset.hot=g.hot;
+    card.dataset.rtp=s.score;
+    card.dataset.id=g.id;
+    card.innerHTML=`
+      ${badge?`<div class="corner ${badge}">${badge==='top'?'🏆 Top':badge==='hot'?'🔥 Quente':'🆕 Novo'}</div>`:''}
+      <div class="card-head">
+        <div class="thumb">${g.icon}</div>
+        <div class="info">
+          <div class="name">${g.name}</div>
+          <div class="provider">🎮 ${g.provider}</div>
+        </div>
+        <div class="sig ${sCls(s.score)}" id="sc-${g.id}">${s.score}%</div>
+      </div>
+      <div class="chart-wrap"><canvas id="ch-${g.id}"></canvas></div>
+      <div class="metrics">
+        <div class="metric">
+          <div class="metric-val" style="color:${sColor(s.score)}" id="mv-${g.id}">${s.score}%</div>
+          <div class="metric-label">RTP</div>
+        </div>
+        <div class="metric">
+          <div class="metric-val" id="vl-${g.id}">${rnd(25,65)}%</div>
+          <div class="metric-label">Volatilidade</div>
+        </div>
+        <div class="metric">
+          <div class="metric-val">${Math.floor(rnd(100,1000))}x</div>
+          <div class="metric-label">Mult. Máx</div>
+        </div>
+      </div>
+      <div class="progress-wrap">
+        <div class="progress-label"><span>Força do Sinal</span><span id="pv-${g.id}">${s.score}%</span></div>
+        <div class="bar"><div class="fill ${fCls(s.score)}" id="fl-${g.id}" style="width:${s.score}%"></div></div>
+      </div>
+      <div class="status-row">
+        <div class="chip">
+          <div class="dot ${dCls(s.score)}" id="dt-${g.id}"></div>
+          <span style="color:${sColor(s.score)}" id="lb-${g.id}">${sLbl(s.score)}</span>
+        </div>
+        <div class="upd" id="tm-${g.id}">${fmtT(s.upd)}</div>
+      </div>
+      <div class="cta-wrap">
+        <a class="${btnCls}" href="${LINK}" target="_blank" rel="noopener noreferrer">🎰 Jogue na BETVIP</a>
+      </div>`;
+    grid.appendChild(card);
+  });
+  sorted().forEach(g=>buildChart(g.id));
+  applyFilter();
+}
+
+/* ── CHART ───────────────────────────────── */
+function buildChart(id){
+  const c=document.getElementById(`ch-${id}`);
+  if(!c) return;
+  if(charts[id]) charts[id].destroy();
+  const {l,f}=pal(state[id].score);
+  charts[id]=new Chart(c,{
+    type:'line',
+    data:{
+      labels:state[id].hist.map((_,i)=>i),
+      datasets:[{data:state[id].hist,borderColor:l,backgroundColor:f,borderWidth:2,pointRadius:0,tension:.45,fill:true}]
+    },
+    options:{
+      responsive:true,maintainAspectRatio:false,
+      plugins:{legend:{display:false},tooltip:{enabled:false}},
+      scales:{x:{display:false},y:{display:false,min:55,max:100}}
+    }
+  });
+}
+
+/* ── ATUALIZA CARD ───────────────────────── */
+function updateCard(id){
+  const s=state[id];
+  const v=s.score;
+  const p=pal(v);
+  const get=n=>document.getElementById(n);
+
+  const sc=get(`sc-${id}`);
+  if(sc){sc.textContent=v+'%';sc.className=`sig ${sCls(v)}`}
+  const mv=get(`mv-${id}`);
+  if(mv){mv.textContent=v+'%';mv.style.color=sColor(v)}
+  const fl=get(`fl-${id}`);
+  if(fl){fl.style.width=v+'%';fl.className=`fill ${fCls(v)}`}
+  const pv=get(`pv-${id}`);if(pv) pv.textContent=v+'%';
+  const dt=get(`dt-${id}`);if(dt) dt.className=`dot ${dCls(v)}`;
+  const lb=get(`lb-${id}`);if(lb){lb.textContent=sLbl(v);lb.style.color=sColor(v)}
+  const tm=get(`tm-${id}`);if(tm) tm.textContent=fmtT(s.upd);
+  const vl=get(`vl-${id}`);if(vl) vl.textContent=rnd(25,65)+'%';
+
+  const card=document.querySelector(`[data-id="${id}"]`);
+  if(card){
+    card.dataset.rtp=v;
+    const top=v>=93;
+    card.classList.toggle('top-glow',top);
+    card.classList.add('flash-card');
+    setTimeout(()=>card.classList.remove('flash-card'),600);
+    let corner=card.querySelector('.corner');
+    const g=games.find(x=>x.id===id);
+    if(top){
+      if(!corner){corner=document.createElement('div');card.prepend(corner);}
+      corner.className='corner top';corner.textContent='🏆 Top';
+    } else if(g&&g.hot){
+      if(!corner){corner=document.createElement('div');card.prepend(corner);}
+      corner.className='corner hot';corner.textContent='🔥 Quente';
+    }
+  }
+  if(charts[id]){
+    charts[id].data.datasets[0].data=[...s.hist];
+    charts[id].data.datasets[0].borderColor=p.l;
+    charts[id].data.datasets[0].backgroundColor=p.f;
+    charts[id].update('none');
+  }
+}
+
+/* ── UPDATE GERAL ────────────────────────── */
+function refreshAll(){
+  const boostId=games[Math.floor(Math.random()*games.length)].id;
+  games.forEach(g=>{
+    const s=state[g.id];
+    const old=s.score;
+    let d=(Math.random()-.45)*3.6;
+    if(g.id===boostId) d+=rnd(2,5.5);
+    s.score=+clamp(s.score+d,62,99.5).toFixed(1);
+    s.trend=+(s.score-old).toFixed(1);
+    s.hist.push(s.score);
+    if(s.hist.length>16) s.hist.shift();
+    s.upd=new Date();
+    updateCard(g.id);
+  });
+  rankRot=(rankRot+1)%3;
+  buildRanking();
+  buildTicker();
+  updateStats();
+  reorderGrid();
+}
+
+/* ── STATS ───────────────────────────────── */
+function updateStats(){
+  const vals=games.map(g=>state[g.id].score);
+  const mx=Math.max(...vals);
+  const str=vals.filter(v=>v>=90).length;
+  const onEl=document.getElementById('s-online');
+  const cur=parseInt((onEl.textContent||'1247').replace(/\./g,''),10);
+  const next=clamp(cur+Math.floor((Math.random()-.5)*80),850,3200);
+  document.getElementById('s-games').textContent=games.length;
+  onEl.textContent=next.toLocaleString('pt-BR');
+  document.getElementById('s-top').textContent=mx.toFixed(1)+'%';
+  document.getElementById('s-strong').textContent=str;
+}
+
+/* ── REORDER ─────────────────────────────── */
+function reorderGrid(){
+  if(sort!=='rtp-desc') return;
+  const grid=document.getElementById('grid');
+  const cards=[...grid.querySelectorAll('.card')];
+  cards.sort((a,b)=>parseFloat(b.dataset.rtp)-parseFloat(a.dataset.rtp));
+  cards.forEach(c=>grid.appendChild(c));
+}
+
+/* ── FILTER / SORT ───────────────────────── */
+function doFilter(f,btn){
+  filter=f;
+  document.querySelectorAll('.filter-btn').forEach(b=>b.classList.remove('active'));
+  btn.classList.add('active');
+  applyFilter();
+}
+function applyFilter(){
+  document.querySelectorAll('.card').forEach(card=>{
+    const p=card.dataset.provider;
+    const hot=card.dataset.hot==='true';
+    const rtp=parseFloat(card.dataset.rtp);
+    let show=false;
+    if(filter==='all') show=true;
+    else if(filter==='hot') show=hot;
+    else if(filter==='top') show=rtp>=90;
+    else show=p===filter;
+    card.style.display=show?'':'none';
+  });
+}
+function doSort(v){ sort=v; renderCards(); }
+
+/* ── NOTIFICAÇÕES ────────────────────────── */
+const notifs=[
+  "🔥 Sinal detectado!","⚡ Momento ideal!","🚀 RTP subindo!",
+  "🔔 Novo sinal alto!","💥 Quente agora!","⭐ Oportunidade!","🏆 Topo do ranking!"
+];
+function showNotif(){
+  const top=sorted()[0];
+  document.getElementById('n-title').textContent=notifs[nIdx%notifs.length];
+  document.getElementById('n-sub').textContent=`${top.icon} ${top.name} — ${state[top.id].score}% RTP`;
+  nIdx++;
+  const el=document.getElementById('notif');
+  el.classList.add('show');
+  setTimeout(()=>el.classList.remove('show'),4500);
+}
+
+/* ── COUNTDOWN ───────────────────────────── */
+function tick(){
+  cd--;
+  document.getElementById('cd').textContent=cd;
+  if(cd<=0){ cd=INTERVAL; refreshAll(); }
+}
+
+/* ── INIT ────────────────────────────────── */
+renderCards();
+buildRanking();
+buildTicker();
+updateStats();
+
+setInterval(tick,1000);
+setInterval(()=>{ rankRot=(rankRot+1)%3; buildRanking(); },7000);
+setInterval(showNotif,15000);
+setTimeout(showNotif,3500);
+</script>
+</body>
+</html>
